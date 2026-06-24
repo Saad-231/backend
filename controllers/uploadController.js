@@ -7,10 +7,14 @@ function handleUpload(req, res) {
 
   const isImage = req.file.mimetype.startsWith('image/');
   let base64 = null;
+  // اگر امیج نہیں ہے تو ڈیفالٹ راستہ، ورنہ نیچے بیس64 سیٹ ہوگا
+  let fileUrl = `/uploads/${req.file.filename}`; 
 
   if (isImage) {
     try {
       base64 = fs.readFileSync(req.file.path).toString('base64');
+      // ٹرِک: یو آر ایل کی جگہ ڈائریکٹ بیس64 ڈیٹا ایڈریس بھیج رہے ہیں تاکہ تھمب نیل فوراً دیکھے
+      fileUrl = `data:${req.file.mimetype};base64,${base64}`;
     } catch (err) {
       console.error('[NovaScribe] Failed to read uploaded image for base64 encoding:', err.message);
     }
@@ -23,9 +27,7 @@ function handleUpload(req, res) {
       originalName: req.file.originalname,
       mimeType: req.file.mimetype,
       size: req.file.size,
-      url: `/uploads/${req.file.filename}`,
-      // Only present for images — lets the AI actually "see" the upload
-      // instead of just receiving a filename placeholder.
+      url: fileUrl, // اب تھمب نیل 100% نظر آئے گا
       base64,
     },
   });
