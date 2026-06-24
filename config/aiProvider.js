@@ -20,8 +20,8 @@ const SYSTEM_PROMPT =
  * this") — without requiring the user to type a "/image" command.
  *
  * Returns either:
- *   { isImageRequest: false }
- *   { isImageRequest: true, prompt: "<a clean, descriptive image prompt>" }
+ * { isImageRequest: false }
+ * { isImageRequest: true, prompt: "<a clean, descriptive image prompt>" }
  */
 async function detectImageIntent(userText) {
   if (!userText || !userText.trim()) return { isImageRequest: false };
@@ -69,10 +69,10 @@ async function detectImageIntent(userText) {
 /**
  * Streams a chat completion.
  * @param {Array<{role: 'user'|'assistant', content: string, imageBase64?: string, imageMimeType?: string}>} history
- *   Each message may optionally include an attached image as base64 data
- *   (no "data:" prefix) plus its mime type — this is how uploaded photos,
- *   camera captures, and gallery images reach the AI as real visual input,
- *   not just a "[image]" placeholder.
+ * Each message may optionally include an attached image as base64 data
+ * (no "data:" prefix) plus its mime type — this is how uploaded photos,
+ * camera captures, and gallery images reach the AI as real visual input,
+ * not just a "[image]" placeholder.
  * @param {AbortSignal} signal
  * @param {(chunkText: string) => void} onChunk
  * @returns {Promise<string>} the full assembled text
@@ -100,12 +100,14 @@ async function streamChatGroq(history, signal, onChunk) {
     baseURL: 'https://api.groq.com/openai/v1',
   });
 
+  // آٹومیٹک چیک کریں کہ ہسٹری میں امیج اٹیچمنٹ ہے یا نہیں
+  const hasImage = history.some((m) => m.imageBase64);
+  
+  // اگر امیج ہے تو ویژن ماڈل پر سوئچ کریں، ورنہ ریگولر چیٹ ماڈل چلائیں
+  const selectedModel = hasImage ? config.groq.visionModel : config.groq.chatModel;
+
   const messages = history.map((m) => {
     if (m.imageBase64) {
-      // Note: most Groq-hosted models are text-only; vision support
-      // varies by model. We still pass the image in OpenAI's standard
-      // shape so it works automatically if a vision-capable Groq model
-      // is configured via GROQ_CHAT_MODEL.
       return {
         role: m.role,
         content: [
@@ -124,7 +126,7 @@ async function streamChatGroq(history, signal, onChunk) {
   try {
     stream = await groqClient.chat.completions.create(
       {
-        model: config.groq.chatModel,
+        model: selectedModel,
         messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
         stream: true,
       },
