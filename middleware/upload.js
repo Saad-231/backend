@@ -4,7 +4,8 @@ const { nanoid } = require('nanoid');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '..', 'uploads'));
+    // ورسیل (Vercel) کے لیے عارضی فولڈر کا راستہ
+    cb(null, '/tmp');
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
