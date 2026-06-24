@@ -5,16 +5,16 @@ require('dotenv').config();
  *
  * AI_PROVIDER switches CHAT between providers with ZERO code changes —
  * just edit .env:
- *   AI_PROVIDER=groq     -> uses GROQ_API_KEY (free, no card, resets every minute)
- *   AI_PROVIDER=gemini   -> uses GEMINI_API_KEY (free, but only 20 requests/DAY)
- *   AI_PROVIDER=openai   -> uses OPENAI_API_KEY (requires billing/card)
+ * AI_PROVIDER=groq     -> uses GROQ_API_KEY (free, no card, resets every minute)
+ * AI_PROVIDER=gemini   -> uses GEMINI_API_KEY (free, but only 20 requests/DAY)
+ * AI_PROVIDER=openai   -> uses OPENAI_API_KEY (requires billing/card)
  *
  * IMAGE_PROVIDER switches IMAGE GENERATION independently — this lets you
  * keep chat on one provider while images use Pollinations (open-source,
  * free, requires only a free no-card account/key from enter.pollinations.ai):
- *   IMAGE_PROVIDER=pollinations  -> free, needs POLLINATIONS_API_KEY (default)
- *   IMAGE_PROVIDER=gemini        -> uses GEMINI_API_KEY's image quota
- *   IMAGE_PROVIDER=openai        -> uses OPENAI_API_KEY (requires billing)
+ * IMAGE_PROVIDER=pollinations  -> free, needs POLLINATIONS_API_KEY (default)
+ * IMAGE_PROVIDER=gemini        -> uses GEMINI_API_KEY's image quota
+ * IMAGE_PROVIDER=openai        -> uses OPENAI_API_KEY (requires billing)
  */
 const config = {
   port: parseInt(process.env.PORT, 10) || 5000,
@@ -38,6 +38,7 @@ const config = {
   groq: {
     apiKey: process.env.GROQ_API_KEY || '',
     chatModel: process.env.GROQ_CHAT_MODEL || 'llama-3.3-70b-versatile',
+    visionModel: process.env.GROQ_VISION_MODEL || 'llama-3.2-11b-vision-preview', // تصویر پڑھنے کے لیے ویژن ماڈل
   },
 
   pollinations: {
