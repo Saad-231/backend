@@ -11,12 +11,14 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
+// CORS کی بالکل صحیح سیٹنگ
 app.use(
   cors({
-    origin: config.clientOrigin,
+    origin: ['http://localhost:5173', 'https://frontend-nine-beta-21.vercel.app'],
     credentials: true,
   })
 );
+
 app.use(express.json({ limit: '5mb' }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
