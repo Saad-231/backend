@@ -78,6 +78,15 @@ async function detectImageIntent(userText) {
  * @returns {Promise<string>} the full assembled text
  */
 async function streamChat(history, signal, onChunk) {
+  // ⚡ سعد بھائی، یہ رہا وہ جادوئی چیک: اگر ہسٹری میں کوئی بھی امیج اپلوڈ ہوئی ہے، 
+  // تو یہ آٹومیٹک ریکویسٹ کو Gemini کے پاس بھیج دے گا، چاہے .env میں کچھ بھی سیٹ ہو!
+  const hasImage = history.some((m) => m.imageBase64);
+  if (hasImage) {
+    console.log("[NovaScribe] Image detected. Routing analysis request to Gemini.");
+    return streamChatGemini(history, signal, onChunk);
+  }
+
+  // اگر امیج نہیں ہے، تو جو .env فائل میں پرووائیڈر ہے (جیسے 'groq')، وہی چلے گا
   if (config.aiProvider === 'groq') {
     return streamChatGroq(history, signal, onChunk);
   }
@@ -100,25 +109,9 @@ async function streamChatGroq(history, signal, onChunk) {
     baseURL: 'https://api.groq.com/openai/v1',
   });
 
-  // آٹومیٹک چیک کریں کہ ہسٹری میں امیج اٹیچمنٹ ہے یا نہیں
-  const hasImage = history.some((m) => m.imageBase64);
-  
-  // اگر امیج ہے تو ویژن ماڈل پر سوئچ کریں، ورنہ ریگولر چیٹ ماڈل چلائیں
-  const selectedModel = hasImage ? config.groq.visionModel : config.groq.chatModel;
+  const selectedModel = config.groq.chatModel;
 
   const messages = history.map((m) => {
-    if (m.imageBase64) {
-      return {
-        role: m.role,
-        content: [
-          { type: 'text', text: m.content || 'What is in this image?' },
-          {
-            type: 'image_url',
-            image_url: { url: `data:${m.imageMimeType || 'image/png'};base64,${m.imageBase64}` },
-          },
-        ],
-      };
-    }
     return { role: m.role, content: m.content };
   });
 
@@ -220,6 +213,7 @@ async function streamChatGemini(history, signal, onChunk) {
   for await (const chunk of stream) {
     if (signal?.aborted) {
       const err = new Error('Generation stopped.');
+      err.name = 'AbortError';
       err.name = 'AbortError';
       throw err;
     }
