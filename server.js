@@ -9,7 +9,8 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: config.clientOrigin,
+    // یہاں ہم نے لائیو اور لوکل دونوں کا سیٹ اپ کر دیا ہے
+    origin: [config.clientOrigin, 'https://novascribe-ai.vercel.app'],
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -21,6 +22,6 @@ server.listen(config.port, () => {
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('  NovaScribe.AI backend is running');
   console.log(`  → http://localhost:${config.port}`);
-  console.log(`  → Allowed client origin: ${config.clientOrigin}`);
+  console.log(`  → Allowed client origin: ${config.clientOrigin}, https://novascribe-ai.vercel.app`);
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 });
