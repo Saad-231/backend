@@ -362,4 +362,8 @@ async function generateImageGemini(prompt) {
   return { url };
 }
 
-module.exports = { streamChat, generateImage, detectImageIntent };
+function stripMarkdownForSpeech(text) {
+  return text.replace(/#{1,6}\s?/g, '').replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
+}
+
+module.exports = { streamChat, generateImage, detectImageIntent, stripMarkdownForSpeech };
