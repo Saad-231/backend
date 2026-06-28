@@ -53,9 +53,21 @@ function registerChatHandlers(io, socket) {
       // since that's a vision question about an uploaded photo, not a
       // generation request.
       const hasImageAttachment = (attachments || []).some(isImageAttachment);
+      const recentHistory = store
+        .getMessages(chat.id)
+        .slice(-6)
+        .map((m) => ({
+          role: m.role,
+          content:
+            m.type === 'image'
+              ? `[I generated an image of: ${m.prompt || 'the requested subject'}]`
+              : typeof m.content === 'string'
+              ? m.content
+              : '',
+        }));
       const intent = hasImageAttachment
         ? { isImageRequest: false }
-        : await aiProvider.detectImageIntent(content.trim());
+        : await aiProvider.detectImageIntent(content.trim(), recentHistory);
 
       if (intent.isImageRequest) {
         // Persist + echo the user's original message first, same as a
@@ -117,6 +129,13 @@ function registerChatHandlers(io, socket) {
       // attached to a message (camera capture, gallery upload, or
       // document) so the AI can actually see it — not just a placeholder.
       const history = store.getMessages(chat.id).map((m) => {
+        if (m.type === 'image') {
+          return {
+            role: m.role,
+            content: `[I generated an image of: ${m.prompt || 'the requested subject'}]`,
+          };
+        }
+
         const entry = { role: m.role, content: typeof m.content === 'string' ? m.content : '' };
         const imageAttachment = (m.attachments || []).find((a) => isImageAttachment(a));
         if (imageAttachment?.base64) {
