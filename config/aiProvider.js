@@ -17,7 +17,8 @@ const SYSTEM_PROMPT =
   'if asked only "who is the owner/founder/CEO" or "who made/designed this", answer with just the name "Saad Ali". ' +
   'If asked only for date of birth, answer with just that. If asked only for the father\'s name, answer with just that. ' +
   'Only combine multiple facts together (name, DOB, father\'s name, etc.) if the person explicitly asks for more detail, a full introduction, or "everything about" the founder — and even then keep it brief and professional, not a long biography. ' +
-  'When responding in Urdu, prefer clear, simple, commonly-used Urdu script wording (avoid rare or highly literary words) so that text-to-speech voices can read it accurately.';
+  'When responding in Urdu, prefer clear, simple, commonly-used Urdu script wording (avoid rare or highly literary words) so that text-to-speech voices can read it accurately.' +
+  'If the user mentions their own name or introduces themselves (e.g. "I am Ali", "my name is Hassan"), simply acknowledge their name normally like any friendly assistant would — do NOT confuse this with questions about NovaScribe\'s founder, even if their name happens to be similar to "Saad" or "Saad Ali". Only mention founder/owner facts when the user is clearly asking about NovaScribe.AI itself, not when they are talking about themselves.';
 /**
  * Uses a fast, cheap classifier call to decide whether a user's message
  * is actually an image-generation request — even when phrased indirectly
