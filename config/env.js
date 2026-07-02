@@ -78,7 +78,3 @@ if (config.imageProvider === 'pollinations' && !config.pollinations.apiKey) {
   );
 }
 
-module.exports = config;
-MONGODB_URI=mongodb+srv://saadali001:SAADTYPIST001@cluster0.7hwcycj.mongodb.net/novascribe?appName=Cluster0
-GOOGLE_CLIENT_ID=252649808144-3cpsurc2ckni4vmjos3if02hlfanh7ja.apps.googleusercontent.com
-JWT_SECRET=novascribe-secret-key-change-this
